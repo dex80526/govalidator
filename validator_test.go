@@ -2479,6 +2479,12 @@ type UserValid struct {
 	Work     []Address `valid:"required"`
 }
 
+
+type UserWithArrayPtrAddress struct {
+	Name string `valid:"required"`
+	Addresses []*Address
+}
+
 type PrivateStruct struct {
 	privateField string `valid:"required,alpha,d_k"`
 	NonZero      int
@@ -3118,6 +3124,8 @@ func TestValidateStruct(t *testing.T) {
 		{UserValid{"John", "", "12345", 0, &Address{"Street", "123456789"}, []Address{{"Street", "ABC456D89"}, {"Street", "123456"}}}, false},
 		{nil, true},
 		{User{"John", "john@yahoo.com", "123G#678", 0, &Address{"Street", "123456"}, []Address{}}, false},
+		{UserWithArrayPtrAddress{"John", []*Address{&Address{"Street", "123456"}, &Address{"Street", "123456"}}}, true},
+		{UserWithArrayPtrAddress{"John", []*Address{&Address{"Street", "123456"}, &Address{"Street", "123456X"}}}, false},
 		{"im not a struct", false},
 	}
 	for _, test := range tests {
