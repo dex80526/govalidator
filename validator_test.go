@@ -2479,9 +2479,8 @@ type UserValid struct {
 	Work     []Address `valid:"required"`
 }
 
-
 type UserWithArrayPtrAddress struct {
-	Name string `valid:"required"`
+	Name      string `valid:"required"`
 	Addresses []*Address
 }
 
@@ -3871,5 +3870,34 @@ func TestIsE164(t *testing.T) {
 		if actual != test.expected {
 			t.Errorf("Expected IsURL(%q) to be %v, got %v", test.param, test.expected, actual)
 		}
+	}
+}
+
+func TestMapInterfaceFieldValidation(t *testing.T) {
+	type address struct {
+		Properties map[string]interface{} `valid:"required"`
+	}
+
+	var tests = []struct {
+		args     address
+		expected bool
+	}{
+		{
+			args: address{
+			Properties: map[string]interface{}{"filter": "v1"}}, 
+			expected: true,
+		},
+		{
+			args: address{
+			Properties: nil}, 
+			expected: false,
+		},
+	}
+	for _, test := range tests {
+		ok, err := ValidateStruct(test.args)
+
+		if ok != test.expected {
+			t.Errorf("expected validation: %v and got: %v, error: %s", test.expected, ok, err)
+		}	
 	}
 }
