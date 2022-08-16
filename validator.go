@@ -1131,7 +1131,7 @@ func ValidateStruct(s interface{}) (bool, error) {
 		}
 		if (valueField.Kind() == reflect.Struct ||
 			(valueField.Kind() == reflect.Ptr && valueField.Elem().Kind() == reflect.Struct)) &&
-			typeField.Tag.Get(tagName) != "-" { 
+			typeField.Tag.Get(tagName) != "-" {
 			var err error
 			structResult, err = ValidateStruct(valueField.Interface())
 			if err != nil {
@@ -1693,6 +1693,11 @@ func typeCheck(v reflect.Value, t reflect.StructField, o reflect.Value, options 
 		if v.IsNil() {
 			return true, nil
 		}
+		// Fix https://github.com/asaskevich/govalidator/issues/460 -- support to validate "false" bool as not empty for required *bool field
+		if v.Elem().Kind() == reflect.Bool {
+			return true, nil
+		}
+
 		return typeCheck(v.Elem(), t, o, options)
 	case reflect.Struct:
 		return true, nil

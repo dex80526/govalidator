@@ -3159,10 +3159,34 @@ func TestRequired(t *testing.T) {
 
 	testString := "foobar"
 	testEmptyString := ""
+	testFalse := false
+	testTrue := true
 	var tests = []struct {
 		param    interface{}
 		expected bool
 	}{
+		{
+			struct {
+				Pointer *bool `valid:"required"`
+			}{},
+			false,
+		},
+		{
+			struct {
+				Pointer *bool `valid:"required"`
+			}{
+				Pointer: &testTrue,
+			},
+			true,
+		},
+	    {
+			struct {
+				Pointer *bool `valid:"required"`
+			}{
+				Pointer: &testFalse,
+			},
+			true,
+		},
 		{
 			struct {
 				Pointer *string `valid:"required"`
